@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+	<meta charset="UTF-8" />
+	<title>MiniShop.com</title>
+	<!-- Google Font: Source Sans Pro -->
+	<link rel="stylesheet"
+		href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+	 <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- Bootstrap -->
+	<link
+     	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+     	th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" media="all"
+		th:href="@{/css/layout/main.css}" />
+			
+	<link th:href="@{/css/posts/index.css}" rel="stylesheet">
+	
+	<!-- Other javascript, css source files -->
+
+
+</head>
+<body>
+	<header th:replace="/fragments/_Header :: header">
+		
+	</header>
+	<div>
+		<section>
+		<div class="sidebar" th:replace="/fragments/_Sidebar :: sidebar">
+		
+		</div>
+		<article >
+			<div layout:fragment="content">
+			
+			</div>
+		</article>
+	</section>
+	</div>
+	<footer th:replace="/fragments/_Footer :: footer">
+		
+	</footer>
+	
+	
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script>
+		function funtionSubmit() {
+			document.getElementById("myForm").submit();
+		}
+	</script>
+	<!-- jquery-select2 -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+	<script>$(document).ready(function() {
+	   	$("#multiple").select2({
+	           placeholder: "Select a category",
+	           allowClear: true
+	       });
+		});
+	</script>
+	<!-- ./wrapper -->
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/_Layout.html}">
+<head>
+
+</head>
+<body >
+	<section layout:fragment="content">
+		<h1>list category</h1>
+		<div style="margin-left: 1px; margin-bottom: 2px" class="row">
+			<a th:href="@{/category/create}" class="btn btn-success "> <span
+				class="glyphicon glyphicon-plus"></span> Add new employee
+			</a>
+		</div>
+		<div class="box-body">
+			<table class="table table-bordered table-hover table-striped">
+				<thead>
+					<tr>
+						<th>categoryID</th>
+						<th>categoryName</th>
+						<th>createdAt</th>
+						<th>updatedAt</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="items: ${listcategory}">
+						<td th:text="${items.id }"></td>
+						<td th:text="${items.name }"></td>
+						<td th:text="${items.createdAt}"></td>
+						<td th:text="${items.updatedAt}"></td>
+						<td><a th:href="@{/category/{id}/edit(id=${items.id})}"><span
+								class="glyphicon glyphicon-pencil"></span></a></td>
+						<td><a th:href="@{/category/{id}/delete(id=${items.id})}"><span
+								class="glyphicon glyphicon-trash"></span></a></td>
+					</tr>
+				</tbody>
+
+			</table>
+		</div>
+	</section>
+</body>
+</html>

@@ -1,0 +1,44 @@
+* {
+	margin:0 auto;
+    box-sizing: border-box;
+}
+section {
+	min-height: 729px;
+	width:100%;
+	display: block;
+	
+}
+.sidebar {
+	
+    float:left;
+    width:20%;
+    height: 950px;
+    background: #222d32;
+    padding: 20px;
+}
+
+article {
+ 	
+ 	float:left;
+ 	width:80%;
+    padding: 20px;
+    background-color: #f1f1f1;
+    height: 950px;
+}
+section:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+footer {
+    background-color: #777;
+    padding: 10px;
+    text-align: center;
+    color: white;
+}
+@media ( max-width : 600px) {
+    nav, article {
+        width: 100%;
+        height: auto;
+    }
+}

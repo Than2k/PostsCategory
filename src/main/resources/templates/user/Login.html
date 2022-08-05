@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8">
+<title>list posts</title>
+<!-- Bootstrap -->
+	<link
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+		th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"
+		rel="stylesheet" />
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link th:href="@{/css/user/login.css}" rel="stylesheet">
+
+</head>
+<body style="margin-left: 30px">
+	<div class="wrap">
+		<form th:action="@{/login}" method="get">
+			<p>Thông tin đăng nhập</p>
+			<div>
+				<div class="form-group">
+					<label>Tài khoản</label><br> 
+					<input name="username"type="text" placeholder=" Tài khoản"><br>
+				</div>
+				<div class="form-group">
+					<label>Mật khẩu</label><br>					 
+					<input name="password" type="password" placeholder="  Mật khẩu">
+				</div>
+				<p id="error" th:text="${error}"></p>
+				<input id="submit" type="submit">
+
+			</div>
+			<p>
+				<a th:href="@{/user/forgotPassword}" id="reset-password">Quên mật khẩu ?</a>
+			</p>
+		</form>
+	</div>
+
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+</body>
+</html>

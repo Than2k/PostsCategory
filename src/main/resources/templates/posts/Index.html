@@ -1,0 +1,123 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/_Layout.html}">
+<head>
+
+</head>
+<body>
+	<div layout:fragment="content">
+		<h1>list posts</h1>
+		<h4 th:text="${'Role: '+ role}"></h4>
+		<!-- hiển thị thông báo nếu bài viết không tồn tại -->
+		<div th:if="${alert} == true">
+			<script>
+				alert('Bài viết này không tồn tại!')
+			</script>
+		</div>
+		<div style="color: blue" th:if="${success} != null">
+			<span th:text="${success}"></span>
+		</div>
+		<!-- search form -->
+		<div class="row">
+			<form id="searchInput" th:action="@{/posts}" method="get">
+				<div class="col-sm-4 ">
+					<select class="form-control list" th:name="category_id">
+						<option th:value="null">---chọn thể loại---</option>
+						<th:block th:each="items : ${listCategory}">
+							<option th:value="${items.id}" th:text="${items.name}"
+								th:onchange="funtionSubmit()"
+								th:selected="${items.id} eq ${paginationIp.category_id}">
+							</option>
+						</th:block>
+					</select>
+				</div>
+				<div class="col-sm-8">
+
+					<div class="input-group">
+						<input type="text" name="searchValues" class="form-control"
+							placeholder="Search..." th:value="${paginationIp.searchValues}">
+
+						<span class="input-group-btn">
+							<button type="submit" id="search-btn"
+								class="btn btn-flat btn-primary">
+								<i class="fa fa-search"></i>
+							</button> <th:block th:if="${role == 'administrator' || role == 'editor'}">
+								<a th:href="@{/posts/create}" class="btn btn-flat btn-success"
+									style="margin-left: 5px">Thêm bài viết</a>
+							</th:block>
+						</span>
+					</div>
+
+				</div>
+			</form>
+		</div>
+		<div class="box-body" style="margin-top: 20px;">
+
+			<th:block th:if="${errorPage} == null">
+				<span>Có <b th:text="${paginationIp.pageCount}"> </b> trang
+					với tổng số <b th:text="${paginationIp.rowCount}"></b> bài viết.
+				</span>
+			</th:block>
+
+			<table class="table table-bordered table-hover table-striped"
+				style="margin-bottom: 10px">
+				<thead>
+					<tr style="color: blue; background: #66CCFF">
+						<th>Tiêu đề</th>
+						<th>Nội dung</th>
+						<th>Ngày tạo</th>
+						<th>Ngày sửa</th>
+						<th>Chi tiết bài viết</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="items: ${listPosts}">
+						<td th:text="${items.title }"></td>
+						<td th:text="${items.content }"></td>
+						<td th:text="${items.createdAt}"></td>
+						<td th:text="${items.updatedAt}"></td>
+						<td><a th:href="@{/posts/{id}/detail(id=${items.id})}">detail</a>
+						</td>
+						<th:block th:if="${role == 'administrator'}">
+							<td><a th:href="@{/posts/{id}/edit(id=${items.id})}"><span
+									class="glyphicon glyphicon-pencil"></span></a></td>
+							<td><a th:href="@{/posts/{id}/delete(id=${items.id})}"><span
+									class="glyphicon glyphicon-trash"></span></a></td>
+						</th:block>
+						<th:block th:if="${role == 'editor'}">
+							<td><a th:href="@{/posts/{id}/edit(id=${items.id})}"><span
+									class="glyphicon glyphicon-pencil"></span></a></td>
+						</th:block>
+
+					</tr>
+				</tbody>
+
+			</table>
+			<th:block th:if="${errorPage} != null">
+				<span th:text="${errorPage}"> </span>
+			</th:block>
+		</div>
+		<div class="text-center">
+			<div class="pagination" style="display: inline-flex;">
+				<th:block th:if="${listPage.size()} > 1">
+					<a th:href="@{/posts(page=${paginationIp.page - 1},category_id = ${paginationIp.category_id}, searchValues = ${paginationIp.searchValues})}">&laquo;</a>
+					<div th:each="items :${listPage}">
+						<p style="margin-left: 3px" th:if="${items != -1}">
+							<a th:class="${ items == paginationIp.page}? 'active'"
+								th:href="@{/posts(page=${items},category_id = ${paginationIp.category_id}, searchValues = ${paginationIp.searchValues})}"
+								th:text="${items}"> </a>
+						</p>
+						<p style="margin-left: 10px; margin-right: 10px; padding-top: 5px"
+							th:unless="${items != -1}">
+							<span>...</span>
+						</p>
+					</div>
+					<a th:href="@{/posts(page=${paginationIp.page + 1},category_id = ${paginationIp.category_id}, searchValues = ${paginationIp.searchValues})}">&raquo;</a>
+			</div>
+			</th:block>
+		</div>
+	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+
+</head>
+<body>
+	<aside th:fragment="sidebar" class="main-sidebar">
+		<!-- sidebar: style can be found in sidebar.less -->
+		<section class="sidebar">
+			<!-- sidebar menu: : style can be found in sidebar.less -->
+			<ul style="font-size: 18px;" class="sidebar-menu" data-widget="tree">
+
+				<li><a th:href="@{/posts}"> <span>Bài viết</span></a></li>
+				<li><a th:href="@{/category}"> <span>Thể loại</span></a></li>
+			</ul>
+		</section>
+		<!-- /.sidebar -->
+	</aside>
+</body>
+</html>
+
+

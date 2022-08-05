@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/_Layout.html}">
+<head>
+
+</head>
+<body>
+	<div layout:fragment="content" style="font-size: 18px;" class="container main-content form">
+		<h1 th:text="${title}"></h1>
+		<div class="row">
+			<form class="form-horizontal" action="#"
+				th:action="@{/posts/save/{id}(id=${posts_id})}"
+				enctype="multipart/form-data" th:object="${postsInput}"
+				method="POST" novalidate="novalidate">
+
+
+				<div class="form-group">
+					<label class="control-label col-sm-2">Tiêu đề</label>
+					<div class="col-sm-10">
+						<input type="text" name="title" class="form-control"
+							th:field="*{title}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-sm-2">Nội dung</label>
+					<div class="col-sm-10">
+						<textarea rows="4" cols="4" class="form-control"
+							th:field="*{content}"></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-sm-2">Chọn thể loại:</label>
+					<div class="col-sm-10">
+						<select id="multiple"
+							class="js-example-basic-multiple form-control"
+							th:field="*{categoryIDs}" multiple="multiple">
+							<th:block th:each="items : ${listCategory}">
+								<option th:value="${items.id}" th:text="${items.name}"
+									th:selected="selected"></option>
+							</th:block>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-sm-2">Ảnh bài viết:</label>
+					<div class="col-sm-10">
+						<input type="file" class="form-control" th:field="*{image}"
+							required="required" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-lg-offset-2 col-sm-10">
+						<input type="hidden" name="Photo" value="@Model.Photo" /> <img
+							id="Photo" th:src="${'\images\'+ image}" class="img img-bordered"
+							style="width: 250px" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2"></label>
+					<div class="col-sm-10">
+
+						<button type="submit" class="btn btn-primary">Save</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+
+</body>
+</html>

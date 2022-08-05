@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/_Layout.html}">
+<head>
+
+</head>
+
+<body >
+   
+    <div layout:fragment="content" class="container" style="margin-top: 30px">
+	 	
+	    <div class="box box-primary">
+	        <div class="box-header with-border">
+				<h1>Thông tin chi tiết bài viết.</h1>
+	        </div>
+	        <div style="background-color: white; font-size:18px; padding: 10px; border-radius: 5px" class="form-horizontal" >
+	            <div class="box-body">
+	                <div class="form-group">
+	                    <label class="control-label col-sm-2" for="email">Tiêu đề:</label>
+	                    <div class="col-sm-10" style="border-bottom:1px dotted #e4dfdf">
+	                        <p class="form-control-static" th:text="${postsDetail.title}"></p>
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label class="control-label col-sm-2" for="email">Nội dung:</label>
+	                    <div class="col-sm-10" style="border-bottom:1px dotted #e4dfdf">
+	                        <p class="form-control-static" th:text="${postsDetail.content}"></p>
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label class="control-label col-sm-2" for="email">Danh mục:</label>
+	                    <div class="col-sm-10" style="border-bottom:1px dotted #e4dfdf">
+	                        <ul th:each="items : ${postsDetail.categories}">
+	                        	<li th:text="${items.categoryName}"></li>
+	                        </ul>
+	                    </div>
+	                </div>
+	                 <div class="form-group"  style="border-bottom:1px dotted #C0C0C0">
+	                    <label class="control-label col-sm-2" ></label>
+	                    <div class="col-sm-10" >	              	
+	                        <img alt="ảnh đại diện bài viết"  th:src="${'\images\'+ postsDetail.image}" class="img img-bordered" style="width:300px">                        	                       
+	                    </div>
+	                </div>
+	                
+	            </div>
+	            <div class="box-footer" >
+	                <div class="form-group">
+	                    <div class="col-sm-offset-2 col-sm-10">	            		                      
+                                           
+	                        <a th:href="@{/posts}" class="btn btn-warning">
+	                            <i class="fa fa-ban"></i>
+	                            Quay lại
+	                        </a>
+	                    </div>
+	                </div>
+	            </div>
+	
+	        </div>
+	    </div>
+	</div>
+      
+</body>
+</html>

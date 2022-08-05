@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragments/_Layout.html}">
+<head>
+
+</head>
+<body>
+	 <div layout:fragment="content" class="container main-content form">
+	 	<h2 th:text="${title}"></h2>
+        <div class="row">
+	          <form action="#" th:action="@{/category/save}" th:object="${category}" method="POST" novalidate="novalidate">
+				     <div class="form-group">
+				        <input  class="form-control" type ="hidden" th:field="*{id}" />
+				    </div>
+				    <div class="form-group">
+				        <label>categoryName</label>
+				        <input type="text" class="form-control"
+				            th:field="*{name}" />
+				    </div>
+				    <div class="form-group">
+				        <label>Created_at</label>
+				        <input type="text" class="form-control" th:field="*{createdAt}" />
+				    </div>
+				    <div class="form-group">
+				        <label>Updated_at</label>
+				        <input type="text" class="form-control" th:field="*{updatedAt}" />
+				    </div>
+				  <!--  
+				    <div>
+				    	<lable>Chọn posts</lable>
+				    	<section th:foreach="{items: ${listposts}">
+				    		<option th:text=${items.name}></option>
+				    	</section>
+				    </div>
+				 -->
+				    <button type="submit" class="btn btn-primary">Save</button>
+				    
+			</form>
+        </div>
+      </div>
+</body>
+</html>

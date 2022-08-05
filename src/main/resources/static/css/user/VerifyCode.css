@@ -1,0 +1,106 @@
+@charset "utf-8";
+
+body {
+	margin:0 auto;
+	background-color: #73b7f4;
+}
+.wrap{
+	margin: 0 auto;
+	display: flex; /* Canh giữa bằng flex */
+    justify-content: center;
+    align-items: center;
+    margin-top:12%;
+}
+
+form {
+	
+	font-family: sans-serif;
+	width: 580px;
+	height: 350px;
+	background-color: #fbfbfb;
+	display: block;
+	padding-left: 5px;
+	padding-right:20px;
+	border: 4px solid #97c9f7;
+	background: #f7f7f7;
+	padding-left: 30px;
+	padding-right: 20px;
+}
+
+form div {
+	margin-top: 10px;
+}
+
+form div div label {
+	font-size: 20px;
+}
+
+form div div input {
+	font-size: 15px;
+}
+
+form input {
+	border-radius: 4px;
+	margin: 12px 0px 0px 0px;
+	width: 530px;
+	height: 40px;
+	background-color: #ffff;
+	border: 1px solid blue;
+	font-size: 18px;
+}
+
+form input:hover {
+	border: 1px solid blue;
+}
+
+#submit {
+	border-radius: 4px;
+	width: 530px;
+	height: 48px;
+	margin-top: 7px;
+	cursor: pointer;
+	background-color: #3988c8;
+	border-color: #2e6da4;
+	border: 1px solid transparent;
+	color: white;
+}
+
+#submit:hover {
+	background-color: #2e6da4;
+}
+
+form div .p1 {
+	text-align: center;
+	font-size: 25px;
+	margin-top: 10px;
+}
+
+form div .p2 {
+	font-size: 15px;
+}
+
+form .email {
+	font-size: 25px;
+	display: inline-block;
+	color: #828282;
+}
+
+form label {
+	font-weight: 500;
+	font-size: 13px;
+}
+
+#error {
+	padding: 0px;
+	color: #e60000;
+	font-size: 14px;
+	text-align: left;
+	font-style: italic;
+}
+
+#sogiay {
+	margin-left: 223px;
+}
+#guilai{
+	margin-left: 223px;
+}
