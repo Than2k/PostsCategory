@@ -17,11 +17,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.testCrud.common.DataUntils;
 import com.example.testCrud.form.UserCode;
 import com.example.testCrud.model.User;
 import com.example.testCrud.service.IUserService;
-
-import utils.DataUtils;
 
 @Controller
 public class UserController {
@@ -129,7 +128,7 @@ public class UserController {
 		if( user != null || userCode != null) {
 			//if tài không bị vô  hiệu hóa mới cho đổi mật khẩu
 			if( user.getUpdatedAt() == null ) {
-				String code = DataUtils.genarateCode(6);//tạo mã xác thực gồm 6 số
+				String code = DataUntils.genarateCode(6);//tạo mã xác thực gồm 6 số
 				SimpleMailMessage msg = new SimpleMailMessage();
 				msg.setTo( (userCode != null) ? userCode.getEmail() : user.getEmail());//set email gửi mã
 				msg.setSubject("Đặt lại mật khẩu cho tài khoản của bạn!!");// set title email
