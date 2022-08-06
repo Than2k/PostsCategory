@@ -47,11 +47,11 @@ public class PostsController {
 
 	// Trả về trang chủ bài viết
 	@GetMapping("/posts")
-	public String index( Model model,
-						 @RequestParam(name = "searchValues", required = false, defaultValue = "") String searchValues,
-						 @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-						 @RequestParam(name = "category_id", required = false, defaultValue = "0") int category_id,
-						 RedirectAttributes redirect, HttpServletRequest rq) {
+	public String index( 	Model model,
+			 	@RequestParam(name = "searchValues", required = false, defaultValue = "") String searchValues,
+			 	@RequestParam(name = "page", required = false, defaultValue = "0") int page,
+			 	@RequestParam(name = "category_id", required = false, defaultValue = "0") int category_id,
+			 	RedirectAttributes redirect, HttpServletRequest rq) {
 
 		HttpSession session = rq.getSession();// tạo session
 		List<Posts> listPosts = null;// tạo list post trả về view
