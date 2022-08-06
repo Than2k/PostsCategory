@@ -7,20 +7,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.example.postscategory.interceptor.AuthencationInterceptor;
 
-
-
 @Configuration
-public class AuthenticationConfig implements WebMvcConfigurer{
-	
+public class AuthenticationConfig implements WebMvcConfigurer {
+
 	@Autowired
 	private AuthencationInterceptor authencationInterceptor;
-	
+
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 
-		registry.addInterceptor(authencationInterceptor)
-		.addPathPatterns("/posts/**");
-		
-		
+		registry.addInterceptor(authencationInterceptor).addPathPatterns("/posts/**");
+
 	}
 }

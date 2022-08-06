@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class HomeController {
-	
-	//Trang chủ
+
+	// Trang chủ
 	@GetMapping("/home")
-	public String home(Model model,HttpServletRequest rq) {
-		model.addAttribute("user",rq.getSession().getAttribute("user"));
+	public String home(Model model, HttpServletRequest rq) {
+		model.addAttribute("user", rq.getSession().getAttribute("user"));
 		return "/home/Index";
 	}
 }

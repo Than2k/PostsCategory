@@ -9,7 +9,7 @@
 	<div layout:fragment="content">
 		<h1>Danh sách bài viết</h1>
 		<h4 th:text="${'Role: '+ role}"></h4>
-		
+
 		<div style="color: blue" th:if="${message} != null">
 			<span th:text="${message}"></span>
 		</div>
@@ -96,7 +96,8 @@
 		<div class="text-center">
 			<div class="pagination" style="display: inline-flex;">
 				<th:block th:if="${listPage.size()} > 1">
-					<a th:href="@{/posts(page=${paginationIp.page - 1},category_id = ${paginationIp.category_id}, searchValues = ${paginationIp.searchValues})}">&laquo;</a>
+					<a
+						th:href="@{/posts(page=${paginationIp.page - 1},category_id = ${paginationIp.category_id}, searchValues = ${paginationIp.searchValues})}">&laquo;</a>
 					<div th:each="items :${listPage}">
 						<p style="margin-left: 3px" th:if="${items != -1}">
 							<a th:class="${ items == paginationIp.page}? 'active'"
@@ -109,12 +110,14 @@
 						</p>
 					</div>
 					<th:block th:if="${ paginationIp.page < paginationIp.pageCount}">
-						<a th:href="@{/posts(page=${paginationIp.page + 1},category_id = ${paginationIp.category_id}, searchValues = ${paginationIp.searchValues})}">&raquo;</a>
+						<a
+							th:href="@{/posts(page=${paginationIp.page + 1},category_id = ${paginationIp.category_id}, searchValues = ${paginationIp.searchValues})}">&raquo;</a>
 					</th:block>
 			</div>
 			</th:block>
 		</div>
 	</div>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </body>
 </html>
