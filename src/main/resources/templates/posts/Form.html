@@ -6,15 +6,22 @@
 
 </head>
 <body>
-	<div layout:fragment="content" style="font-size: 18px;" class="container main-content form">
+	<div layout:fragment="content" style="font-size: 18px; width: 800px" class="container main-content form">
 		<h1 th:text="${title}"></h1>
 		<div class="row">
 			<form class="form-horizontal" action="#"
-				th:action="@{/posts/save/{id}(id=${posts_id})}"
+				th:action="@{/posts/save}"
 				enctype="multipart/form-data" th:object="${postsInput}"
 				method="POST" novalidate="novalidate">
 
-
+				<div  class="form-group">
+					<div class="col-sm-10">
+						<input th:type="hidden"  type="text" name="id" class="form-control" 
+							th:field="*{id}" />
+					</div>
+				</div>
+				
+				
 				<div class="form-group">
 					<label class="control-label col-sm-2">Tiêu đề</label>
 					<div class="col-sm-10">
@@ -46,13 +53,14 @@
 					<label class="control-label col-sm-2">Ảnh bài viết:</label>
 					<div class="col-sm-10">
 						<input type="file" class="form-control" th:field="*{image}"
+							onchange="document.getElementById('Photo').src = window.URL.createObjectURL(this.files[0])"
 							required="required" />
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-lg-offset-2 col-sm-10">
-						<input type="hidden" name="Photo" value="@Model.Photo" /> <img
-							id="Photo" th:src="${'\images\'+ image}" class="img img-bordered"
+					<div  class="col-lg-offset-2 col-sm-10">
+						<input type="hidden" name="Photo" value="@Model.Photo" /> 
+						<img id="Photo" th:src="${'\images\'+ image}" class="img img-bordered"
 							style="width: 250px" />
 					</div>
 				</div>

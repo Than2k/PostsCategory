@@ -7,16 +7,11 @@
 </head>
 <body>
 	<div layout:fragment="content">
-		<h1>list posts</h1>
+		<h1>Danh sách bài viết</h1>
 		<h4 th:text="${'Role: '+ role}"></h4>
-		<!-- hiển thị thông báo nếu bài viết không tồn tại -->
-		<div th:if="${alert} == true">
-			<script>
-				alert('Bài viết này không tồn tại!')
-			</script>
-		</div>
-		<div style="color: blue" th:if="${success} != null">
-			<span th:text="${success}"></span>
+		
+		<div style="color: blue" th:if="${message} != null">
+			<span th:text="${message}"></span>
 		</div>
 		<!-- search form -->
 		<div class="row">
@@ -113,7 +108,9 @@
 							<span>...</span>
 						</p>
 					</div>
-					<a th:href="@{/posts(page=${paginationIp.page + 1},category_id = ${paginationIp.category_id}, searchValues = ${paginationIp.searchValues})}">&raquo;</a>
+					<th:block th:if="${ paginationIp.page < paginationIp.pageCount}">
+						<a th:href="@{/posts(page=${paginationIp.page + 1},category_id = ${paginationIp.category_id}, searchValues = ${paginationIp.searchValues})}">&raquo;</a>
+					</th:block>
 			</div>
 			</th:block>
 		</div>
