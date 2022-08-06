@@ -166,8 +166,9 @@ public class PostsController {
 
 				Path staticPath = Paths.get("src/main/resources/static/images");// đường dẫn lưu ảnh
 				Path imagePath = Paths.get("");// đường dẫn
-				if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath))) {// kiểm tra xem ảnh đó tồn
-																							// tại không
+				// kiểm tra xem ảnh đó tồn tại không
+				if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath))) {
+																							
 
 					Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath));
 				}
