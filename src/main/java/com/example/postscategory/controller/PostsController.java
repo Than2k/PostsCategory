@@ -59,9 +59,10 @@ public class PostsController {
 		int index;
 		String role = null;
 		rowCount = postsService.count(category_id, searchValues); // số lượng posts
-		PaginationInput pInput = new PaginationInput((page <= 0) ? 1 : page, 10, rowCount, searchValues, category_id);// tạo
-																														// input
-																														// search
+		//Tạo input search
+		PaginationInput pInput = new PaginationInput((page <= 0) ? 1 : page, 10, rowCount, searchValues, category_id);
+																														
+																														
 		// xử lý phân trang hiển thị 6 trang
 		List<Integer> listPage = new ArrayList<Integer>();
 		index = pInput.getPage();
@@ -166,8 +167,8 @@ public class PostsController {
 
 				Path staticPath = Paths.get("src/main/resources/static/images");// đường dẫn lưu ảnh
 				Path imagePath = Paths.get("");// đường dẫn
-				if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath))) {// kiểm tra xem ảnh đó tồn
-																							// tại không
+				// kiểm tra xem ảnh đó tồn tại không
+				if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath))) {																						 
 
 					Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath));
 				}
