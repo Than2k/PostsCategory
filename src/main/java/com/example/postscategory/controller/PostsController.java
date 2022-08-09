@@ -139,12 +139,12 @@ public class PostsController {
 			postsInput.setCategoryIDs(CPService.getListCategoryID(id));
 
 			// tempPost.setImage((MultipartFile)Posts.getImage());
-			List<Integer> listCId = CPService.getListCategoryID(id);// get list categoryID theo posts_id
+			//List<Integer> listCId = CPService.getListCategoryID(id);// get list categoryID theo posts_id
 			model.addAttribute("title", "Sửa bài viết");
 			model.addAttribute("image", posts.getImage());
 			model.addAttribute("postsInput", postsInput);
 			model.addAttribute("listCategory", categoryservice.findAll());
-			model.addAttribute("listCategoryId", listCId);
+			//model.addAttribute("listCategoryId", listCId);
 			model.addAttribute("user", rq.getSession().getAttribute("user"));
 
 			return "/posts/Form";

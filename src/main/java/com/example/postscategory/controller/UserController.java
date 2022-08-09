@@ -53,7 +53,7 @@ public class UserController {
 
 		// if tài khoản tồn tại thì return profile
 		if (session.getAttribute("user") != null) {
-			return "redirect:/user/profile";
+			return "redirect:/profile";
 		}
 
 		// nếu user == null thì thông báo lỗi
