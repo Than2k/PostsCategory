@@ -43,11 +43,19 @@ public class PostsController {
 
 	// Trả về trang chủ bài viết
 	@GetMapping("/posts")
+<<<<<<< HEAD
 	public String index( Model model,
 						 @RequestParam(name = "searchValues", required = false, defaultValue = "") String searchValues,
 						 @RequestParam(name = "page", required = false, defaultValue = "0") int pageInput,
 						 @RequestParam(name = "category_id", required = false, defaultValue = "0") int category_id,
 						 RedirectAttributes redirect, HttpServletRequest rq) {
+=======
+	public String index( 	Model model,
+			 	@RequestParam(name = "searchValues", required = false, defaultValue = "") String searchValues,
+			 	@RequestParam(name = "page", required = false, defaultValue = "0") int page,
+			 	@RequestParam(name = "category_id", required = false, defaultValue = "0") int category_id,
+			 	RedirectAttributes redirect, HttpServletRequest rq) {
+>>>>>>> b0ecc6f3ada62ee3c77ac4533b7e3e8205054d62
 
 		HttpSession session = rq.getSession();// tạo session
 		List<Posts> listPosts = null;// tạo list post trả về view
@@ -102,6 +110,11 @@ public class PostsController {
 			postsInput.setId(posts.getId()); postsInput.setTitle(posts.getTitle());
 			postsInput.setContent(posts.getContent()); postsInput.setCategoryIDs(CPService.getListCategoryID(id));
 
+<<<<<<< HEAD
+=======
+			// tempPost.setImage((MultipartFile)Posts.getImage());
+
+>>>>>>> b0ecc6f3ada62ee3c77ac4533b7e3e8205054d62
 			model.addAttribute("title", "Sửa bài viết");
 			model.addAttribute("image", posts.getImage());
 			model.addAttribute("postsInput", postsInput);
@@ -118,9 +131,81 @@ public class PostsController {
 
 	//lưu mới bài viết
 	@PostMapping("/posts/save")
+<<<<<<< HEAD
 	public String create(@Valid PostsInput postsInput, BindingResult result, RedirectAttributes redirect) throws Exception{
 		if (result.hasErrors()) {
 			return "posts/Create";
+=======
+	public String save( @Valid PostsInput postsIp, BindingResult result, RedirectAttributes redirect) {
+		try {
+
+			int postsId = postsIp.getId();
+			String image = null;
+			// if ảnh được chọn mới xử lý thêm vào server
+			if (!postsIp.getImage().isEmpty()) {
+
+				Path staticPath = Paths.get("src/main/resources/static/images");// đường dẫn lưu ảnh
+				Path imagePath = Paths.get("");// đường dẫn
+				// kiểm tra xem ảnh đó tồn tại không
+				if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath))) {
+																							
+
+					Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath));
+				}
+				Path file = CURRENT_FOLDER.resolve(staticPath).resolve(imagePath)
+						.resolve(postsIp.getImage().getOriginalFilename());
+				image = imagePath.resolve(postsIp.getImage().getOriginalFilename()).toString();// lấy link tên file ảnh
+				try (OutputStream os = Files.newOutputStream(file)) {
+					os.write(postsIp.getImage().getBytes());
+				}
+			}
+			// kiểm tra xem bài viết có phải thêm mới không
+			if (postsId == 0) {// thêm mới
+				if (result.hasErrors()) {
+					return "posts/Form";
+				}
+				int postsID = 0;
+				Posts posts = new Posts();// tạo mới post
+				posts.setTitle(postsIp.getTitle());
+				posts.setContent(postsIp.getContent());
+				Date date = new Date();
+				posts.setCreatedAt(date);
+				if (image != null)
+					posts.setImage(image);
+				postsService.save(posts);// thêm bài viết csdl
+				postsID = posts.getId();
+
+				// thêm thể loại vô csdl
+				for (int items : postsIp.getCategoryIDs()) {
+					CPService.Add(items, postsID);
+				}
+				// trả về thông báo
+				redirect.addFlashAttribute("message", "Thêm thành công bài viết có tiêu đề là:" + posts.getTitle());
+				// ngược lại thì edit bài viết
+			} else { // edit
+
+				Posts posts = postsService.getPostdByID(postsId);
+				posts.setTitle(postsIp.getTitle());
+				posts.setContent(postsIp.getContent());
+				Date date = new Date();
+				posts.setUpdatedAt(date);
+				// nếu edit mà thay đổi anh thì mới set lại ảnh
+				if (image != null)
+					posts.setImage(image);
+				postsService.save(posts);
+
+				// xóa category_posts
+				CPService.deleteByPostsID(postsId);
+				for (int items : postsIp.getCategoryIDs()) {
+					CPService.Add(items, postsId);
+				}
+				redirect.addFlashAttribute("message", "Cập nhật thành công bài viết có tiêu đề là:" + posts.getTitle());
+			}
+			return "redirect:/posts";
+		} catch (Exception e) {
+			System.out.println("Lỗi:" + e.getMessage());
+			return "Lỗi:" + e.getMessage();
+>>>>>>> b0ecc6f3ada62ee3c77ac4533b7e3e8205054d62
 		}
 		int postsID = 0; Date date = new Date();
 		String image = postsService.upLoadImage(postsInput.getImage());
