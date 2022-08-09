@@ -2,6 +2,9 @@ package com.example.postscategory.service;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.postscategory.model.Posts;
 
 /**
@@ -55,4 +58,10 @@ public interface IPostsService {
      * @return
      */
     int count(int categoryId, String searchValues);
+    /**
+     * Thêm ảnh mới vào sever
+     * @param file
+     * @return String
+     */
+    String upLoadImage(MultipartFile pathFile) throws Exception;
 }

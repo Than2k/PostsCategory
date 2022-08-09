@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.postscategory.common.DataUntils;
+import com.example.postscategory.common.SendEmail;
 import com.example.postscategory.form.UserCode;
 import com.example.postscategory.model.User;
 import com.example.postscategory.service.IUserService;
@@ -62,13 +63,13 @@ public class UserController {
 			return "user/Login";
 
 			// ngược lại check thông tin tài khoản mật khẩu
-		} else if (user.getPassword().equals(DigestUtils.sha1Hex(password).toString())) {
+		} else if (user.getPassword().equals( DigestUtils.sha1Hex(password).toString())) {
 			if (user.getUpdatedAt() != null) {// trường updated_at khác null
 				model.addAttribute("error", "Tài khoản của bạn đã bị vô hiệu hóa!");
 				return "user/Login";
 			}
 			session.setAttribute("user", user);// tạo sssion lưu thông tin đăng nhập
-			session.removeAttribute("url");// xoa session url đi
+			session.removeAttribute("uri");// xoa session uri đi
 			model.addAttribute("user", user);
 
 			// đăng nhập thành công nếu uri khác null thì trả về trang trước đó or trả về
@@ -105,8 +106,7 @@ public class UserController {
 			HttpServletRequest rq, RedirectAttributes redirect, Model model) {
 
 		HttpSession session = rq.getSession();
-		UserCode userCode = null;
-		User user = null;
+		UserCode userCode = null; User user = null;
 		if (session.getAttribute("userCode") != null)
 			userCode = (UserCode) session.getAttribute("userCode");
 
@@ -114,32 +114,18 @@ public class UserController {
 		if (username.equals("") && userCode == null) {
 			return "user/ForgotPassword";
 		}
-
-		// trả về User theo userName
-		if (userCode != null) {
-			user = userService.findByUserName(userCode.getUserName());// đã gửi mã xác thực mà hết hiệu lực yêu cầu gửi
-																		// lại
-		} else {
-			user = userService.findByUserName(username);// yêu cầu gửi mã xác thực lần đầu
-		}
+		user = (userCode != null) ? userService.findByUserName(userCode.getUserName()) : userService.findByUserName(username);
 		// userName tồn tại
 		if (user != null || userCode != null) {
 			// if tài không bị vô hiệu hóa mới cho đổi mật khẩu
-			if (user.getUpdatedAt() == null) {
+			if (user.getUpdatedAt() == null) {		
 				String code = DataUntils.genarateCode(6);// tạo mã xác thực gồm 6 số
-				SimpleMailMessage msg = new SimpleMailMessage();
-				msg.setTo((userCode != null) ? userCode.getEmail() : user.getEmail());// set email gửi mã
-				msg.setSubject("Đặt lại mật khẩu cho tài khoản của bạn!!");// set title email
-				msg.setText("xin chào " + user.getFullName() + "\n" + "mã xác thực cho tài khoản của bạn là: " + code
-						+ "\n" + "bạn không được cung cấp mã này cho bất kì ai để tránh mất tài khoản");// set nội dung
+				SimpleMailMessage msg = SendEmail.sendVerifyCode( user, code);
 				javaMailSender.send(msg);// gửi mail
-
-				// lưu thông tin email
-				LocalTime time = java.time.LocalTime.now();// lấy thời gian vừa gửi mail
-				session.setAttribute("userCode", new UserCode(user.getUserName(), code, user.getEmail(), time));
+				session.setAttribute("userCode", new UserCode(user.getUserName(), code, user.getEmail(), 
+																	java.time.LocalTime.now()));
 				model.addAttribute("email", user.getEmail());
 				return "redirect:/user/verifyCode";
-
 			} else {
 				model.addAttribute("error", "Tài khoản này đã bị vô hiệu hóa!");
 			}
@@ -165,29 +151,24 @@ public class UserController {
 			return "redirect:/user/forgotPassword";
 		}
 		// xử lý thời gian gửi mã xác nhận
-		LocalTime timeNow = java.time.LocalTime.now();// lấy thời gian hiện tại
-		long timeMilis = timeNow.getLong(ChronoField.MILLI_OF_DAY)
-				- userCode.getSendTime().getLong(ChronoField.MILLI_OF_DAY);
-		model.addAttribute("giay", 60 - timeMilis / 1000);// trẳ về thời gian xác thực
+		long times = SendEmail.timeVerifyCode(userCode.getSendTime());
+		model.addAttribute("giay", 60 - times);// trẳ về thời gian xác thực
 		model.addAttribute("email", userCode.getEmail());// trả về email form xác thực
 
 		// chạy lần đầu
 		if (code.equals("")) {
 			return "user/VerifyCode";
 		}
-
 		// if thời gian xác thực mã >60 s thì thông báo lỗi
-		if ((timeMilis / 1000) > 60) {
+		if (times > 60) {
 			model.addAttribute("error", "Mã xác nhận đã hết hiệu lực.");
 			model.addAttribute("giay", 0);
 			return "user/VerifyCode";
-
-			// if mã code nhập vào đúng thì return về form đổi mật khẩu
+		// if mã code nhập vào đúng thì return về form đổi mật khẩu
 		} else if (code.equals(userCode.getCode())) {
 			session.setAttribute("verify", true);
 			return "user/ResetPassword";
-
-			// trả về trang xác thực mã xác nhận thông báo lỗi
+		// trả về trang xác thực mã xác nhận thông báo lỗi
 		} else {
 			model.addAttribute("error", "Mã không chính xác.");
 			return "user/VerifyCode";
