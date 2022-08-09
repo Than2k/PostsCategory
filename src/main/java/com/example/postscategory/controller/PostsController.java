@@ -33,7 +33,7 @@ import com.example.postscategory.service.IPostsService;
 
 @Controller
 public class PostsController {
-	
+
 	@Autowired
 	private IPostsService postsService;
 	@Autowired
@@ -43,40 +43,33 @@ public class PostsController {
 
 	// Trả về trang chủ bài viết
 	@GetMapping("/posts")
-<<<<<<< HEAD
-	public String index( Model model,
-						 @RequestParam(name = "searchValues", required = false, defaultValue = "") String searchValues,
-						 @RequestParam(name = "page", required = false, defaultValue = "0") int pageInput,
-						 @RequestParam(name = "category_id", required = false, defaultValue = "0") int category_id,
-						 RedirectAttributes redirect, HttpServletRequest rq) {
-=======
-	public String index( 	Model model,
-			 	@RequestParam(name = "searchValues", required = false, defaultValue = "") String searchValues,
-			 	@RequestParam(name = "page", required = false, defaultValue = "0") int page,
-			 	@RequestParam(name = "category_id", required = false, defaultValue = "0") int category_id,
-			 	RedirectAttributes redirect, HttpServletRequest rq) {
->>>>>>> b0ecc6f3ada62ee3c77ac4533b7e3e8205054d62
+
+	public String index(Model model,
+			@RequestParam(name = "searchValues", required = false, defaultValue = "") String searchValues,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int pageInput,
+			@RequestParam(name = "category_id", required = false, defaultValue = "0") int category_id,
+			RedirectAttributes redirect, HttpServletRequest rq) {
 
 		HttpSession session = rq.getSession();// tạo session
 		List<Posts> listPosts = null;// tạo list post trả về view
 		int rowCount;
 		String role = null;
 		rowCount = postsService.count(category_id, searchValues); // số lượng posts
-		//Tạo input search
-		Pagination pInput = new Pagination((pageInput <= 0) ? 1 : pageInput, 10, rowCount, searchValues, category_id);																																																								
+		// Tạo input search
+		Pagination pInput = new Pagination((pageInput <= 0) ? 1 : pageInput, 10, rowCount, searchValues, category_id);
 		// xử lý phân trang hiển thị 6 trang
 		List<Integer> listPage = pInput.helper(pageInput);
-		if(listPage.size() == 0) {
+		if (listPage.size() == 0) {
 			model.addAttribute("errorPage", "Không tìm thấy kết quả nào!");
 		}
 		// lấy dữ liêu theo page và pageSize
-		listPosts = postsService.listPosts( pInput.getCategory_id(), pInput.getPage(), pInput.getPageSize(),
-											pInput.getSearchValues());
+		listPosts = postsService.listPosts(pInput.getCategory_id(), pInput.getPage(), pInput.getPageSize(),
+				pInput.getSearchValues());
 		// kiểm tra quyền trả về view hiển hiện chức năng theo role
 		if (session.getAttribute("role") != null) {
 			role = (String) session.getAttribute("role");
 		}
-		//đẩy dữ liệu qua view
+		// đẩy dữ liệu qua view
 		model.addAttribute("paginationIp", pInput);
 		model.addAttribute("listCategory", categoryservice.findAll());
 		model.addAttribute("listPosts", listPosts);// trả về list post theo trang
@@ -89,9 +82,9 @@ public class PostsController {
 	// create posts
 	@GetMapping("/posts/create")
 	public String create(Model model, HttpServletRequest rq) {
-		
+
 		PostsInput postsInput = new PostsInput();
-		model.addAttribute("postsInput", postsInput); 
+		model.addAttribute("postsInput", postsInput);
 		model.addAttribute("title", "Thêm mới bài viết");
 		model.addAttribute("listCategory", categoryservice.findAll());
 		model.addAttribute("user", rq.getSession().getAttribute("user"));
@@ -100,21 +93,18 @@ public class PostsController {
 
 	// edit posts
 	@GetMapping("/posts/{id}/edit")
-	public String edit( @PathVariable int id, Model model, RedirectAttributes redirect, HttpServletRequest rq) {
+	public String edit(@PathVariable int id, Model model, RedirectAttributes redirect, HttpServletRequest rq) {
 		// bài viêt đó phải tồn tại thì mới cho vô sửa
 		if (postsService.getPostdByID(id) != null) {
 			PostsInput postsInput = new PostsInput();
 			Posts posts = postsService.getPostdByID(id);
-			
+
 			// tạo postsInput trả về form
-			postsInput.setId(posts.getId()); postsInput.setTitle(posts.getTitle());
-			postsInput.setContent(posts.getContent()); postsInput.setCategoryIDs(CPService.getListCategoryID(id));
-
-<<<<<<< HEAD
-=======
-			// tempPost.setImage((MultipartFile)Posts.getImage());
-
->>>>>>> b0ecc6f3ada62ee3c77ac4533b7e3e8205054d62
+			postsInput.setId(posts.getId());
+			postsInput.setTitle(posts.getTitle());
+			postsInput.setContent(posts.getContent());
+			postsInput.setCategoryIDs(CPService.getListCategoryID(id));
+			//tạo model
 			model.addAttribute("title", "Sửa bài viết");
 			model.addAttribute("image", posts.getImage());
 			model.addAttribute("postsInput", postsInput);
@@ -124,94 +114,26 @@ public class PostsController {
 			return "/posts/Update";
 			// bài viết không tồn tại trả về trang index và thông báo lỗi
 		} else {
-			redirect.addFlashAttribute("message","Không tìm thấy bài viết có id là:"+id);
+			redirect.addFlashAttribute("message", "Không tìm thấy bài viết có id là:" + id);
 			return "redirect:/posts";
 		}
 	}
 
-	//lưu mới bài viết
+	// lưu mới bài viết
 	@PostMapping("/posts/save")
-<<<<<<< HEAD
-	public String create(@Valid PostsInput postsInput, BindingResult result, RedirectAttributes redirect) throws Exception{
+	public String create(@Valid PostsInput postsInput, BindingResult result, RedirectAttributes redirect)
+			throws Exception {
 		if (result.hasErrors()) {
 			return "posts/Create";
-=======
-	public String save( @Valid PostsInput postsIp, BindingResult result, RedirectAttributes redirect) {
-		try {
-
-			int postsId = postsIp.getId();
-			String image = null;
-			// if ảnh được chọn mới xử lý thêm vào server
-			if (!postsIp.getImage().isEmpty()) {
-
-				Path staticPath = Paths.get("src/main/resources/static/images");// đường dẫn lưu ảnh
-				Path imagePath = Paths.get("");// đường dẫn
-				// kiểm tra xem ảnh đó tồn tại không
-				if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath))) {
-																							
-
-					Files.createDirectories(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath));
-				}
-				Path file = CURRENT_FOLDER.resolve(staticPath).resolve(imagePath)
-						.resolve(postsIp.getImage().getOriginalFilename());
-				image = imagePath.resolve(postsIp.getImage().getOriginalFilename()).toString();// lấy link tên file ảnh
-				try (OutputStream os = Files.newOutputStream(file)) {
-					os.write(postsIp.getImage().getBytes());
-				}
-			}
-			// kiểm tra xem bài viết có phải thêm mới không
-			if (postsId == 0) {// thêm mới
-				if (result.hasErrors()) {
-					return "posts/Form";
-				}
-				int postsID = 0;
-				Posts posts = new Posts();// tạo mới post
-				posts.setTitle(postsIp.getTitle());
-				posts.setContent(postsIp.getContent());
-				Date date = new Date();
-				posts.setCreatedAt(date);
-				if (image != null)
-					posts.setImage(image);
-				postsService.save(posts);// thêm bài viết csdl
-				postsID = posts.getId();
-
-				// thêm thể loại vô csdl
-				for (int items : postsIp.getCategoryIDs()) {
-					CPService.Add(items, postsID);
-				}
-				// trả về thông báo
-				redirect.addFlashAttribute("message", "Thêm thành công bài viết có tiêu đề là:" + posts.getTitle());
-				// ngược lại thì edit bài viết
-			} else { // edit
-
-				Posts posts = postsService.getPostdByID(postsId);
-				posts.setTitle(postsIp.getTitle());
-				posts.setContent(postsIp.getContent());
-				Date date = new Date();
-				posts.setUpdatedAt(date);
-				// nếu edit mà thay đổi anh thì mới set lại ảnh
-				if (image != null)
-					posts.setImage(image);
-				postsService.save(posts);
-
-				// xóa category_posts
-				CPService.deleteByPostsID(postsId);
-				for (int items : postsIp.getCategoryIDs()) {
-					CPService.Add(items, postsId);
-				}
-				redirect.addFlashAttribute("message", "Cập nhật thành công bài viết có tiêu đề là:" + posts.getTitle());
-			}
-			return "redirect:/posts";
-		} catch (Exception e) {
-			System.out.println("Lỗi:" + e.getMessage());
-			return "Lỗi:" + e.getMessage();
->>>>>>> b0ecc6f3ada62ee3c77ac4533b7e3e8205054d62
 		}
-		int postsID = 0; Date date = new Date();
 		String image = postsService.upLoadImage(postsInput.getImage());
+		int postsID = 0;
+		Date date = new Date();
 		Posts posts = new Posts();// tạo mới post
-		posts.setTitle(postsInput.getTitle()); posts.setContent(postsInput.getContent());		
-		posts.setCreatedAt(date);posts.setImage(image);
+		posts.setTitle(postsInput.getTitle());
+		posts.setContent(postsInput.getContent());
+		posts.setCreatedAt(date);
+		posts.setImage(image);
 		postsService.save(posts);// thêm bài viết csdl
 		postsID = posts.getId();
 
@@ -221,17 +143,20 @@ public class PostsController {
 		}
 		// trả về thông báo
 		redirect.addFlashAttribute("message", "Thêm thành công bài viết có tiêu đề là:" + posts.getTitle());
-		return "redirect:/posts";
+		return "posts";
 	}
-	// update bài viết
+	// sửa bài viết		
 	@PostMapping("/posts/update")
-	public String save( @Valid PostsInput postsInput, BindingResult result, RedirectAttributes redirect) throws Exception{
+	public String save(@Valid PostsInput postsInput, BindingResult result, RedirectAttributes redirect)
+			throws Exception {
 		if (result.hasErrors()) {
 			return "posts/Update";
 		}
-		int postsId = postsInput.getId(); Date date = new Date();
+		int postsId = postsInput.getId();
+		Date date = new Date();
 		Posts posts = postsService.getPostdByID(postsId);
-		posts.setTitle(postsInput.getTitle()); posts.setContent(postsInput.getContent());
+		posts.setTitle(postsInput.getTitle());
+		posts.setContent(postsInput.getContent());
 		posts.setUpdatedAt(date);
 		String image = postsService.upLoadImage(postsInput.getImage());
 		// nếu edit mà thay đổi anh thì mới set lại ảnh
@@ -247,9 +172,10 @@ public class PostsController {
 		redirect.addFlashAttribute("message", "Cập nhật thành công bài viết có tiêu đề là:" + posts.getTitle());
 		return "redirect:/posts";
 	}
-
+	
+	// xóa bài viết
 	@RequestMapping("/posts/{id}/delete")
-	public String delete( @PathVariable int id, RedirectAttributes redirect, Model model, HttpServletRequest rq) {
+	public String delete(@PathVariable int id, RedirectAttributes redirect, Model model, HttpServletRequest rq) {
 		/*
 		 * kiểm tra bài viết này tồn tại không nếu tồn tài thì xóa ngược lại trả về
 		 * trang index và thông báo lỗi
@@ -261,14 +187,17 @@ public class PostsController {
 			 * bài viết đó và trả về trang index
 			 */
 			if (rq.getMethod().equals("POST")) {
-				CPService.deleteByPostsID(id); postsService.delete(id);
+				CPService.deleteByPostsID(id);
+				postsService.delete(id);
 				redirect.addFlashAttribute("message", "Xóa thành công bài viết có tiêu đề là:" + postsByID.getTitle());
 				return "redirect:/Posts";
-			// ngược lại lấy post đó theo posts_id trả về trang delete
+				// ngược lại lấy post đó theo posts_id trả về trang delete
 			} else {
 				// tạo postsOutput
-				PostsOutput postsOutput = new PostsOutput(); postsOutput.setTitle(postsByID.getTitle());
-				postsOutput.setContent(postsByID.getContent()); postsOutput.setImage(postsByID.getImage());
+				PostsOutput postsOutput = new PostsOutput();
+				postsOutput.setTitle(postsByID.getTitle());
+				postsOutput.setContent(postsByID.getContent());
+				postsOutput.setImage(postsByID.getImage());
 				List<Integer> listCId = CPService.getListCategoryID(id);// get list categoryID theo posts_id
 				// nếu bài viết không có thể loại nào thì gán thể loại bằng null
 				if (listCId.isEmpty()) {
@@ -276,7 +205,7 @@ public class PostsController {
 					// ngược lại gán list thể loại theo posts
 				} else {
 					List<CategoryNameId> listNId = new ArrayList<CategoryNameId>();
-					for (int items : listCId) 
+					for (int items : listCId)
 						listNId.add(new CategoryNameId(categoryservice.getNameByID(items), items));
 					postsOutput.setCategories(listNId);
 				}
@@ -289,18 +218,20 @@ public class PostsController {
 			redirect.addFlashAttribute("message", "Không tìn tháy bài viết với id:" + id);
 			return "redirect:/posts";
 		}
-		
+
 	}
 
 	// hiển thị chi tiết bài viết
 	@GetMapping("/posts/{id}/detail")
-	public String postsCategoryDetail(  @PathVariable("id") int id, Model model, HttpServletRequest rq,
-										RedirectAttributes redirect) {
+	public String postsCategoryDetail(@PathVariable("id") int id, Model model, HttpServletRequest rq,
+			RedirectAttributes redirect) {
 
 		Posts postsByID = postsService.getPostdByID(id);// get posts by id
 		if (postsByID != null) {
-			PostsOutput temp = new PostsOutput(); temp.setTitle(postsByID.getTitle());
-			temp.setContent(postsByID.getContent()); temp.setImage(postsByID.getImage());
+			PostsOutput temp = new PostsOutput();
+			temp.setTitle(postsByID.getTitle());
+			temp.setContent(postsByID.getContent());
+			temp.setImage(postsByID.getImage());
 			List<Integer> listCId = CPService.getListCategoryID(id);// get list categoryID theo posts_id
 			if (listCId.isEmpty()) {
 				temp.setCategories(null);
