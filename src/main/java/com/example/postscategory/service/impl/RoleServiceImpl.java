@@ -1,4 +1,4 @@
-package com.example.postscategory.service;
+package com.example.postscategory.service.impl;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.postscategory.model.Role;
 import com.example.postscategory.repository.RoleRepository;
+import com.example.postscategory.service.IRoleService;
 @Service
 public class RoleServiceImpl implements IRoleService{
 	

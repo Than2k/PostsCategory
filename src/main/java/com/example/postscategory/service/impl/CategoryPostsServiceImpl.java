@@ -1,4 +1,4 @@
-package com.example.postscategory.service;
+package com.example.postscategory.service.impl;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +10,7 @@ import com.example.postscategory.model.Category;
 import com.example.postscategory.model.CategoryPosts;
 import com.example.postscategory.model.Posts;
 import com.example.postscategory.repository.CategoryPostsRepository;
+import com.example.postscategory.service.ICategoryPostsService;
 
 
 @Service

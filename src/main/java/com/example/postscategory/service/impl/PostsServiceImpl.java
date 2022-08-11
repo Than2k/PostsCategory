@@ -1,4 +1,4 @@
-package com.example.postscategory.service;
+package com.example.postscategory.service.impl;
 
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.postscategory.model.Posts;
 import com.example.postscategory.repository.PostsRepository;
+import com.example.postscategory.service.IPostsService;
 
 @Service
 public class PostsServiceImpl  implements IPostsService{

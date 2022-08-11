@@ -128,11 +128,11 @@ public class PostsController {
 		}
 		String image = postsService.upLoadImage(postsInput.getImage());
 		int postsID = 0;
-		Date date = new Date();
+		Date createAt = new Date();
 		Posts posts = new Posts();// tạo mới post
 		posts.setTitle(postsInput.getTitle());
 		posts.setContent(postsInput.getContent());
-		posts.setCreatedAt(date);
+		posts.setCreatedAt(createAt);
 		posts.setImage(image);
 		postsService.save(posts);// thêm bài viết csdl
 		postsID = posts.getId();
@@ -153,11 +153,11 @@ public class PostsController {
 			return "posts/Update";
 		}
 		int postsId = postsInput.getId();
-		Date date = new Date();
+		Date updateAt = new Date();
 		Posts posts = postsService.getPostdByID(postsId);
 		posts.setTitle(postsInput.getTitle());
 		posts.setContent(postsInput.getContent());
-		posts.setUpdatedAt(date);
+		posts.setUpdatedAt(updateAt);
 		String image = postsService.upLoadImage(postsInput.getImage());
 		// nếu edit mà thay đổi anh thì mới set lại ảnh
 		if (image != null)

@@ -74,23 +74,19 @@ public class CategoryController {
 	public String save(@Valid CategoryInput categoryInput, BindingResult result, RedirectAttributes redirect) {
 		try {
 			int id = categoryInput.getId();
-			System.out.println("id:" + id);
+			Category category = new Category();
+			category.setName(categoryInput.getName()); 
+			category.setId(categoryInput.getId());
 			// thêm mới
-			if (id == 0) {
-				Category category = new Category();
-				category.setName(categoryInput.getName());
+			if (id == 0) {				
 				category.setCreatedAt(new Date());
 				categoryService.save(category);
-				return "redirect:/category";
-				// sửa
+			// sửa
 			} else {
-				Category category = new Category();
-				category.setId(categoryInput.getId());
-				category.setName(categoryInput.getName());
 				category.setUpdatedAt(new Date());
-				categoryService.save(category);
-				return "redirect:/category";
+				categoryService.save(category);				
 			}
+			return "redirect:/category";
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Lỗi:" + e.getMessage());
