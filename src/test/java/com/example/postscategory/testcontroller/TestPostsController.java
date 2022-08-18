@@ -66,7 +66,7 @@ public class TestPostsController {
 	public List<Category> createListCategoryTest() throws Exception {
 		SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
 		List<Category> listCategory = new ArrayList<Category>();
-		listCategory.add(new Category(1, "Tin tức ", ff.parse("2022-11-10"), null));
+		listCategory.add(new Category(1, "Tin tức", ff.parse("2022-11-10"), null));
 		listCategory.add(new Category(2, "Thời tiết", ff.parse("2022-11-10"), null));
 		listCategory.add(new Category(3, "Tin tưc  7h", ff.parse("2022-11-10"), null));
 		listCategory.add(new Category(4, "Tin tức 10h", ff.parse("2022-11-10"), null));
@@ -78,8 +78,8 @@ public class TestPostsController {
 		SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
 		List<Posts> listPosts = new ArrayList<Posts>();
 		listPosts.add(new Posts(1, "Tin tức", "mọi người vui vẻ", "ip13promax.jpg", ff.parse("2022-11-11"), null));
-		listPosts.add(new Posts(2, "Tin tức", "mọi người vui vẻ", "ip13promax.jpg", ff.parse("2022-11-11"), null));
-		listPosts.add(new Posts(3, "Tin tức", "mọi người vui vẻ", "ip13promax.jpg", ff.parse("2022-11-11"), null));
+		listPosts.add(new Posts(2, "Tin tức 7h", "mọi người vui vẻ", "ip13promax.jpg", ff.parse("2022-11-11"), null));
+		listPosts.add(new Posts(3, "Tin tức 8h", "mọi người vui vẻ", "ip13promax.jpg", ff.parse("2022-11-11"), null));
 		return listPosts;
 	}
 	User user = new User(2, "Tanthan", "Võ Tấn Thân", "12345", null, "tanthan2000@gmail.com");
@@ -141,6 +141,7 @@ public class TestPostsController {
 				.andReturn();
 		MockHttpServletResponse reponse = mvcResult.getResponse();
 		assertEquals("Thêm thành công bài viết có tiêu đề là:Tin tức tối nay", mvcResult.getFlashMap().get("message"));
+		// kiểm tra trang được điều hướng tới
 		assertEquals("/posts", reponse.getRedirectedUrl() );
 
 
@@ -172,6 +173,7 @@ public class TestPostsController {
 				.andReturn();
 		MockHttpServletResponse response = mvcResult.getResponse();
 		assertEquals("Cập nhật thành công bài viết có id là:10", mvcResult.getFlashMap().get("message"));
+		//kiểm tra trang được điều hướng
 		assertEquals("/posts", response.getRedirectedUrl() );
 
 	}
@@ -182,11 +184,19 @@ public class TestPostsController {
 		Posts post = new Posts(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
 				ff.parse("2022-11-11"), null);
 		
-		 // giả lập Service trả về dữ liệu mong muốn	 
+		// giả lập Service trả về dữ liệu mong muốn
+		//trả về list role
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
+		//tim kiếm post theo id
 		when(postsService.getPostdByID(anyInt())).thenReturn(post);//return post or null
+		//return categoryName by id
+		when(categoryService.getNameByID(anyInt())).thenReturn(createListCategoryTest().get(0).getName())
+								                   .thenReturn(createListCategoryTest().get(1).getName())
+								                   .thenReturn(createListCategoryTest().get(4).getName());
+		//trả về list categoryId by postsId
+		when(CPService.getListCategoryID(anyInt())).thenReturn(Arrays.asList(1, 2, 5));
 
-		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.post("/posts/{id}/delete", 10)
+		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}/delete", 10)//method get or post
 				.sessionAttr("user", user))
 				.andDo(MockMvcResultHandlers.print()).andReturn();
 		
@@ -198,14 +208,17 @@ public class TestPostsController {
 			if (mvcResult.getRequest().getMethod().equalsIgnoreCase("Post")) {// method post là xóa
 				assertEquals("Xóa thành công bài viết có tiêu đề là:Tin tức tối nay",
 						mvcResult.getFlashMap().get("message"));
+				//kiểm tra trang được điều hướng tới
 				assertEquals("/posts", response.getRedirectedUrl());
 			}else {//trả về trang post/Delete
 				assertEquals("Tin tức tối nay", ((PostsOutput)mvcResult.getModelAndView().getModel().get("postsOutput")).getTitle());
+				//viewName trả về
 				assertEquals("/posts/Delete", mvcResult.getModelAndView().getViewName());
 			}
 			
 		} else {
 			assertEquals("Không tìm thấy bài viết với id:10", mvcResult.getFlashMap().get("message"));
+			//kiểm tra trang được điều hướng tới
 			assertEquals("/posts", response.getRedirectedUrl());
 		}
 	}
@@ -219,7 +232,10 @@ public class TestPostsController {
 		 // giả lập Service trả về dữ liệu mong muốn	 
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
 		when(CPService.getListCategoryID(anyInt())).thenReturn(Arrays.asList(2, 5));
-		when(categoryService.getNameByID(anyInt())).thenReturn("Tin tức");
+		//return categoryName by id
+		when(categoryService.getNameByID(anyInt())).thenReturn(createListCategoryTest().get(0).getName())
+												   .thenReturn(createListCategoryTest().get(1).getName())
+												   .thenReturn(createListCategoryTest().get(4).getName());
 		when(postsService.getPostdByID(anyInt())).thenReturn(post);//return null or posts
 
 		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}/detail", 10)
@@ -233,11 +249,13 @@ public class TestPostsController {
 		// kiểm tra trường hợp
 		if (postsResult == null) {// ko tìm thấy bài viêt
 			assertEquals("Không tìm thấy bài viết với id:10", mvcResult.getFlashMap().get("message"));
+			//kiểm tra trang được điều hướng tới
 			assertEquals("/posts", response.getRedirectedUrl());
 		} else {//kiểm tra dữ liệu
 			assertEquals("Tin tức tối nay", postsOutput.getTitle());
 			assertEquals("Tin tức", postsOutput.getCategories().get(0).getCategoryName());
 			assertEquals(2, postsOutput.getCategories().size());
+			//kiểm tra viewName
 			assertEquals("posts/postsDetail", mvcResult.getModelAndView().getViewName());
 		}
 
