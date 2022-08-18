@@ -3,36 +3,27 @@ package com.example.postscategory.testcontroller;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.StreamingHttpOutputMessage.Body;
-import org.springframework.http.server.reactive.HttpHandler;
-import org.springframework.mock.web.MockHttpServletMapping;
-import org.springframework.mock.web.MockHttpServletRequest;
+
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.client.MockMvcClientHttpRequestFactory;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.client.MockMvcHttpConnector;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.junit.Assert.assertEquals;
@@ -41,8 +32,6 @@ import static org.mockito.ArgumentMatchers.any;
 import com.example.postscategory.common.Pagination;
 import com.example.postscategory.common.Roles;
 import com.example.postscategory.controller.PostsController;
-import com.example.postscategory.form.CategoryInput;
-import com.example.postscategory.form.CategoryNameId;
 import com.example.postscategory.form.PostsInput;
 import com.example.postscategory.form.PostsOutput;
 import com.example.postscategory.model.Category;
@@ -54,8 +43,6 @@ import com.example.postscategory.service.ICategoryService;
 import com.example.postscategory.service.IPostsService;
 import com.example.postscategory.service.IRoleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.http.HttpHeaders;
-import net.bytebuddy.asm.Advice.This;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(PostsController.class)
@@ -152,7 +139,10 @@ public class TestPostsController {
 						.content(objectMapper.writeValueAsString(postsInput)))
 				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
+		MockHttpServletResponse reponse = mvcResult.getResponse();
 		assertEquals("Thêm thành công bài viết có tiêu đề là:Tin tức tối nay", mvcResult.getFlashMap().get("message"));
+		assertEquals("/posts", reponse.getRedirectedUrl() );
+
 
 	}
 
