@@ -87,7 +87,7 @@ public class TestPostsController {
 
 	// Test inddexx case: trả về it nhất 1 bài viết
 	@Test
-	public void testIndex_when_postsService_listPost_then_listPost() throws Exception {
+	public void testIndex_listPost_exists() throws Exception {
 
 		// giả lập Service trả về dữ liệu mong muốn
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
@@ -118,7 +118,7 @@ public class TestPostsController {
 
 	// Test inddexx case: không tìm thấy bài viết nào
 	@Test
-	public void testIndex_when_postsService_listPost_then_null() throws Exception {
+	public void testIndex_listPosts_exitsts() throws Exception {
 
 		// giả lập Service trả về dữ liệu mong muốn
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
@@ -200,7 +200,7 @@ public class TestPostsController {
 
 	// Test sửa bài viết case: Bài viết đó không tồn tại
 	@Test
-	public void testEdit_when_postsService_getPostdByID_then_null() throws Exception {
+	public void testEdit_posts_not_exists() throws Exception {
 
 		// giả lập Service trả về dữ liệu mong muốn
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
@@ -221,7 +221,7 @@ public class TestPostsController {
 
 	// test sửa bài viết case: bài viết đó được tìm thấy
 	@Test
-	public void testEdit_when_postsService_getPostsById_then_posts() throws Exception {
+	public void testEdit_posts_exists() throws Exception {
 		SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
 		Posts post = new Posts(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
 				ff.parse("2022-11-11"), null);
@@ -251,24 +251,6 @@ public class TestPostsController {
 
 	}
 
-	// test sửa bài viết case: bài viết đó được ko tìm thấy
-	@Test
-	public void testEdit_when_postsService_getPostsById_then_null() throws Exception {
-
-		// giả lập Service trả về dữ liệu mong muốn
-		// tim kiếm post theo id
-		when(postsService.getPostdByID(anyInt())).thenReturn(null);//
-
-		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}/edit", 10)
-				.sessionAttr("user", user).sessionAttr("role", Roles.EDITOR)).andDo(MockMvcResultHandlers.print())
-				.andReturn();
-
-		// kiểm tra
-		assertEquals("Không tìm thấy bài viết có id:10", mvcResult.getFlashMap().get("message"));
-		// viewName trả về
-		assertEquals("/posts", mvcResult.getResponse().getRedirectedUrl());
-
-	}
 
 	// Test lưu bài viết đã được sửa
 	@Test
@@ -304,7 +286,7 @@ public class TestPostsController {
 
 	// Test Xóa bài viết case: bài viết đó không tồn tại
 	@Test
-	public void testDelete_when_postsService_getPostsById_then_null() throws Exception {
+	public void testDelete_posts_not_exists() throws Exception {
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
 		// tim kiếm post theo id
 		when(postsService.getPostdByID(anyInt())).thenReturn(null);// return post or null
@@ -355,7 +337,7 @@ public class TestPostsController {
 	 * trang xác nhận xóa
 	 */
 	@Test
-	public void testDelete_when_postsService_getPostsById_then_posts_method_get() throws Exception {
+	public void testDelete_posts_exists_method_get() throws Exception {
 		SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
 		Posts post = new Posts(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
 				ff.parse("2022-11-11"), null);
@@ -387,7 +369,7 @@ public class TestPostsController {
 	// Test Xóa bài viết case: bài viết đó tồn tại và method post thực hiện xóa bài
 	// viết
 	@Test
-	public void testDelete_when_postsService_getPostsById_then_posts_method_post() throws Exception {
+	public void testDelete_posts_exists_method_post() throws Exception {
 		SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
 		Posts post = new Posts(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
 				ff.parse("2022-11-11"), null);
@@ -412,7 +394,7 @@ public class TestPostsController {
 
 	// Test chi tiết bài viết case: bài viết đó không tồn tại
 	@Test
-	public void testPostsDetail_postsService_getPostsById_then_null() throws Exception {
+	public void testPostsDetail_posts_not_exists() throws Exception {
 		// giả lập Service trả về dữ liệu mong muốn
 		when(postsService.getPostdByID(anyInt())).thenReturn(null);
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
@@ -432,7 +414,7 @@ public class TestPostsController {
 
 	// Test chi tiết bài viết case: bài viết đó tồn tại
 	@Test
-	public void testPostsDetail_postsService_getPostsById_then_posts() throws Exception {
+	public void testPostsDetail_posts_exists() throws Exception {
 		SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
 		Posts post = new Posts(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
 				ff.parse("2022-11-11"), null);
