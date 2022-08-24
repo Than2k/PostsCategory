@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import com.example.postscategory.common.DataUntils;
 import com.example.postscategory.common.Roles;
 import com.example.postscategory.controller.UserController;
 import com.example.postscategory.model.Role;
@@ -39,14 +41,22 @@ public class TestLogin {
 	@MockBean
 	private IRoleService roleService;
 
+	public User createUserTest() throws Exception{
+		SimpleDateFormat ff = new SimpleDateFormat("dd-MM-yyyy");
+		User user = new User(3, "Tanthan", "Võ Tấn Thân", DigestUtils.sha1Hex("than123"),
+				ff.parse("2022-08-23"), "tanthan2000@gmail.com");
+		return user;
+	}
+	
 	// Test Login case: Tài khoản tồn tại và chưa bị vô hiệu hóa mật khẩu đúng
 	@Test
 	public void TestLogin_user_exists_status_enable_password_true() throws Exception {
 
 		List<Role> listRole = Arrays.asList(new Role(1, "administrator"));
 
-		User user = new User(3, "Tanthan", "Võ Tấn Thân", "a5e9681b51c61ec237a2d440257ba560a687f140", null,
-				"tanthan2000@gmail.com");
+		User user = createUserTest();
+		user.setUpdatedAt(null);
+		
 		when(userService.findByUserName(anyString())).thenReturn(user);
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
 
@@ -66,9 +76,7 @@ public class TestLogin {
 	@Test
 	public void TestLogin_user_exists_status_enable_password_false() throws Exception {
 
-		User user = new User(3, "Tanthan", "Võ Tấn Thân", "a5e9681b51c61ec237a2d440257ba560a687f140",
-				null, "tanthan2000@gmail.com");
-		when(userService.findByUserName(anyString())).thenReturn(user);
+		when(userService.findByUserName(anyString())).thenReturn(createUserTest());
 
 		MvcResult mvcResult = this.mockMvc
 				.perform(MockMvcRequestBuilders.get("/login").param("username", "Tanthan").param("password", "than12"))
@@ -83,10 +91,7 @@ public class TestLogin {
 	@Test
 	public void TestLogin_user_exists_status_disable() throws Exception {
 
-		SimpleDateFormat ff = new SimpleDateFormat("dd-MM-yyyy");
-		User user = new User(3, "Tanthan", "Võ Tấn Thân", "a5e9681b51c61ec237a2d440257ba560a687f140",
-				ff.parse("2022-08-23"), "tanthan2000@gmail.com");
-		when(userService.findByUserName(anyString())).thenReturn(user);
+		when(userService.findByUserName(anyString())).thenReturn(createUserTest());
 
 		MvcResult mvcResult = this.mockMvc
 				.perform(MockMvcRequestBuilders.get("/login").param("username", "Tanthan").param("password", "than123"))
