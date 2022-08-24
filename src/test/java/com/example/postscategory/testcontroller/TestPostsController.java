@@ -87,7 +87,7 @@ public class TestPostsController {
 
 	// Test inddexx case: trả về it nhất 1 bài viết
 	@Test
-	public void testIndex_listPost_exists() throws Exception {
+	public void testIndex_listPosts_exists() throws Exception {
 
 		// giả lập Service trả về dữ liệu mong muốn
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
@@ -118,7 +118,7 @@ public class TestPostsController {
 
 	// Test inddexx case: không tìm thấy bài viết nào
 	@Test
-	public void testIndex_listPosts_exitsts() throws Exception {
+	public void testIndex_listPosts_not_exitsts() throws Exception {
 
 		// giả lập Service trả về dữ liệu mong muốn
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
@@ -250,7 +250,6 @@ public class TestPostsController {
 		assertEquals("/posts/Edit", mvcResult.getModelAndView().getViewName());
 
 	}
-
 
 	// Test lưu bài viết đã được sửa
 	@Test
