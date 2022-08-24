@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,182 +81,384 @@ public class TestPostsController {
 		listPosts.add(new Posts(3, "Tin tức 8h", "mọi người vui vẻ", "ip13promax.jpg", ff.parse("2022-11-11"), null));
 		return listPosts;
 	}
-	User user = new User(2, "Tanthan", "Võ Tấn Thân", "12345", null, "tanthan2000@gmail.com");
-	List<Role> listRole = Arrays.asList(new Role(1, "administrator")) ;
-	@Test
-	public void testIndex() throws Exception {
 
-		
-		
-		 // giả lập Service trả về dữ liệu mong muốn	 
+	User user = new User(2, "Tanthan", "Võ Tấn Thân", "12345", null, "tanthan2000@gmail.com");
+	List<Role> listRole = Arrays.asList(new Role(1, "administrator"));
+
+	// Test inddexx case: trả về it nhất 1 bài viết
+	@Test
+	public void testIndex_when_postsService_listPost_then_listPost() throws Exception {
+
+		// giả lập Service trả về dữ liệu mong muốn
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
 		when(categoryService.findAll()).thenReturn(createListCategoryTest());
 		when(postsService.count(anyInt(), anyString())).thenReturn(3);
 		when(postsService.listPosts(anyInt(), anyInt(), anyInt(), anyString())).thenReturn(createListPostsTest());
 		//
-		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/posts")
-				.sessionAttr("user", user))
-				.andDo(MockMvcResultHandlers.print())
-				.andReturn();
-		
+		MvcResult mvcResult = this.mockMvc
+				.perform(
+						MockMvcRequestBuilders.get("/posts").sessionAttr("user", user).sessionAttr("role", Roles.ADMIN))
+				.andDo(MockMvcResultHandlers.print()).andReturn();
+
 		Pagination paginationResult = (Pagination) mvcResult.getModelAndView().getModel().get("paginationIp");
-		//kiểm tra  số trang
+		// kiểm tra số trang
 		assertEquals(1, paginationResult.getPageCount());
-		//kiểm tra pageSize
+		// kiểm tra pageSize
 		assertEquals(10, paginationResult.getPageSize());
-		//Kiểm tra số lượng post
+		// Kiểm tra số lượng post
 		assertEquals(3, paginationResult.getRowCount());
-		//kiểm tra viewName
+		// kiểm tra viewName
 		assertEquals("posts/Index", mvcResult.getModelAndView().getViewName());
-		//kiểm tra role
+		// kiểm tra role
 		assertEquals(Roles.ADMIN, mvcResult.getModelAndView().getModel().get("role"));
-		//kt fullname
-		assertEquals("Võ Tấn Thân",( (User)mvcResult.getModelAndView().getModel().get("user")).getFullName());
-	
+		// kt fullname
+		assertEquals("Võ Tấn Thân", ((User) mvcResult.getModelAndView().getModel().get("user")).getFullName());
 
 	}
 
+	// Test inddexx case: không tìm thấy bài viết nào
+	@Test
+	public void testIndex_when_postsService_listPost_then_null() throws Exception {
+
+		// giả lập Service trả về dữ liệu mong muốn
+		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
+		when(categoryService.findAll()).thenReturn(createListCategoryTest());
+		when(postsService.count(anyInt(), anyString())).thenReturn(0);
+		when(postsService.listPosts(anyInt(), anyInt(), anyInt(), anyString())).thenReturn(null);
+		//
+		MvcResult mvcResult = this.mockMvc
+				.perform(MockMvcRequestBuilders.get("/posts").sessionAttr("role", Roles.ADMIN))
+				.andDo(MockMvcResultHandlers.print()).andReturn();
+
+		Pagination paginationResult = (Pagination) mvcResult.getModelAndView().getModel().get("paginationIp");
+		// kiểm tra số trang
+		assertEquals(0, paginationResult.getPageCount());
+		// kiểm tra viewName
+		assertEquals("posts/Index", mvcResult.getModelAndView().getViewName());
+		// kiểm tra role
+		assertEquals(Roles.ADMIN, mvcResult.getModelAndView().getModel().get("role"));
+		// kt fullname
+		assertEquals("Không tìm thấy kết quả nào!", mvcResult.getModelAndView().getModel().get("errorPage"));
+
+	}
+
+	// Test thêm mới 1 bài viết
 	@Test
 	public void testSave() throws Exception {
 		SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
-		List<Integer> listCId = Arrays.asList(1,2,3);
+		List<Integer> listCId = Arrays.asList(1, 2, 3);
 		PostsInput postsInput = new PostsInput(0, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
 				listCId);
 		Posts postResult = new Posts(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
 				ff.parse("2022-11-11"), null);
-		
-		 // giả lập Service trả về dữ liệu mong muốn	 
+
+		// giả lập Service trả về dữ liệu mong muốn
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
 		when(postsService.upLoadImage(any(MultipartFile.class))).thenReturn(null);
 		when(postsService.save(any(Posts.class))).thenReturn(postResult);
 
 		MvcResult mvcResult = this.mockMvc
-				.perform(MockMvcRequestBuilders.post("/posts/save")
-						.sessionAttr("user", user)
-						.accept(MediaType.APPLICATION_JSON)
-						.contentType("application/json")
-						.content(objectMapper.writeValueAsString(postsInput)))
-				.andDo(MockMvcResultHandlers.print())
-				.andReturn();
+				.perform(MockMvcRequestBuilders.post("/posts/save").sessionAttr("user", user)
+						.sessionAttr("role", Roles.ADMIN).accept(MediaType.APPLICATION_JSON)
+						.contentType("application/json").content(objectMapper.writeValueAsString(postsInput)))
+				.andDo(MockMvcResultHandlers.print()).andReturn();
 		MockHttpServletResponse reponse = mvcResult.getResponse();
 		assertEquals("Thêm thành công bài viết có tiêu đề là:Tin tức tối nay", mvcResult.getFlashMap().get("message"));
 		// kiểm tra trang được điều hướng tới
-		assertEquals("/posts", reponse.getRedirectedUrl() );
-
+		assertEquals("/posts", reponse.getRedirectedUrl());
 
 	}
 
+	// Test thêm mới 1 bài viết case: role user
+	@Test
+	public void testCreate_role_user() throws Exception {
+
+		MvcResult mvcResult = this.mockMvc.perform(
+				MockMvcRequestBuilders.get("/posts/create").sessionAttr("user", user).sessionAttr("role", Roles.USER))
+				.andDo(MockMvcResultHandlers.print()).andReturn();
+		MockHttpServletResponse reponse = mvcResult.getResponse();
+
+		// kiểm tra trang được điều hướng tới
+		assertEquals("/alert", reponse.getRedirectedUrl());
+
+	}
+
+	// Test sửa bài viết case: role user
+	@Test
+	public void testEdit_role_user() throws Exception {
+
+		MvcResult mvcResult = this.mockMvc
+				.perform(MockMvcRequestBuilders.post("/posts/edit").sessionAttr("role", Roles.USER))
+				.andDo(MockMvcResultHandlers.print()).andReturn();
+
+		MockHttpServletResponse response = mvcResult.getResponse();
+
+		// kiểm tra trang được điều hướng
+		assertEquals("/alert", response.getRedirectedUrl());
+
+	}
+
+	// Test sửa bài viết case: Bài viết đó không tồn tại
+	@Test
+	public void testEdit_when_postsService_getPostdByID_then_null() throws Exception {
+
+		// giả lập Service trả về dữ liệu mong muốn
+		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
+		// thêm ảnh
+
+		when(postsService.getPostdByID(anyInt())).thenReturn(null);
+		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}/edit", 10)
+				.sessionAttr("user", user).sessionAttr("role", Roles.ADMIN)).andDo(MockMvcResultHandlers.print())
+				.andReturn();
+
+		MockHttpServletResponse response = mvcResult.getResponse();
+		assertEquals("Không tìm thấy bài viết có id:10", mvcResult.getFlashMap().get("message"));
+
+		// kiểm tra trang được điều hướng
+		assertEquals("/posts", response.getRedirectedUrl());
+
+	}
+
+	// test sửa bài viết case: bài viết đó được tìm thấy
+	@Test
+	public void testEdit_when_postsService_getPostsById_then_posts() throws Exception {
+		SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
+		Posts post = new Posts(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
+				ff.parse("2022-11-11"), null);
+
+		// giả lập Service trả về dữ liệu mong muốn
+		// trả về list role
+		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
+		// tim kiếm post theo id
+		when(postsService.getPostdByID(anyInt())).thenReturn(post);// return post or null
+		// return categoryName by id
+		when(categoryService.getNameByID(anyInt())).thenReturn(createListCategoryTest().get(0).getName())
+				.thenReturn(createListCategoryTest().get(1).getName())
+				.thenReturn(createListCategoryTest().get(4).getName());
+		// trả về list categoryId by postsId
+		when(CPService.getListCategoryID(anyInt())).thenReturn(Arrays.asList(1, 2, 5));
+		when(categoryService.findAll()).thenReturn((Iterable<Category>) createListCategoryTest());
+
+		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}/edit", 10)
+				.sessionAttr("user", user).sessionAttr("role", Roles.EDITOR)).andDo(MockMvcResultHandlers.print())
+				.andReturn();
+
+		// kiểm tra
+		assertEquals("Tin tức tối nay",
+				((PostsInput) mvcResult.getModelAndView().getModel().get("postsInput")).getTitle());
+		// viewName trả về
+		assertEquals("/posts/Edit", mvcResult.getModelAndView().getViewName());
+
+	}
+
+	// test sửa bài viết case: bài viết đó được ko tìm thấy
+	@Test
+	public void testEdit_when_postsService_getPostsById_then_null() throws Exception {
+
+		// giả lập Service trả về dữ liệu mong muốn
+		// tim kiếm post theo id
+		when(postsService.getPostdByID(anyInt())).thenReturn(null);//
+
+		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}/edit", 10)
+				.sessionAttr("user", user).sessionAttr("role", Roles.EDITOR)).andDo(MockMvcResultHandlers.print())
+				.andReturn();
+
+		// kiểm tra
+		assertEquals("Không tìm thấy bài viết có id:10", mvcResult.getFlashMap().get("message"));
+		// viewName trả về
+		assertEquals("/posts", mvcResult.getResponse().getRedirectedUrl());
+
+	}
+
+	// Test lưu bài viết đã được sửa
 	@Test
 	public void testUpdate() throws Exception {
 		SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
-		List<Integer> listCId = Arrays.asList(1,2,3);
-		PostsInput postsInput = new PostsInput(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null ,
+		List<Integer> listCId = Arrays.asList(1, 2, 3);
+		PostsInput postsInput = new PostsInput(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
 				listCId);
 		Posts postResult = new Posts(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
-				ff.parse("2022-11-11"),null);
-		Posts postResultUpdate = new Posts(10, "Tin tức tối nay", "Tin tức tối nay có nhiều diễn biến hay", null,
+				ff.parse("2022-11-11"), null);
+		Posts postResultUpdate = new Posts(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
 				ff.parse("2022-11-11"), ff.parse("2022-8-18"));
-		
-		 // giả lập Service trả về dữ liệu mong muốn	 
+
+		// giả lập Service trả về dữ liệu mong muốn
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
+		// thêm ảnh
 		when(postsService.upLoadImage(any(MultipartFile.class))).thenReturn(null);
 		when(postsService.save(any(Posts.class))).thenReturn(postResultUpdate);
 		when(postsService.getPostdByID(anyInt())).thenReturn(postResult);
 		MvcResult mvcResult = this.mockMvc
-				.perform(MockMvcRequestBuilders.post("/posts/update")
-						.sessionAttr("user", user)
-						.accept(MediaType.APPLICATION_JSON)
-						.contentType("application/json")
+				.perform(MockMvcRequestBuilders.post("/posts/update").sessionAttr("role", Roles.ADMIN)
+						.accept(MediaType.APPLICATION_JSON).contentType("application/json")
 						.content(objectMapper.writeValueAsString(postsInput)))
-				.andDo(MockMvcResultHandlers.print())
-				.andReturn();
+				.andDo(MockMvcResultHandlers.print()).andReturn();
+
 		MockHttpServletResponse response = mvcResult.getResponse();
+
 		assertEquals("Cập nhật thành công bài viết có id là:10", mvcResult.getFlashMap().get("message"));
-		//kiểm tra trang được điều hướng
-		assertEquals("/posts", response.getRedirectedUrl() );
+		// kiểm tra trang được điều hướng
+		assertEquals("/posts", response.getRedirectedUrl());
 
 	}
-	
+
+	// Test Xóa bài viết case: bài viết đó không tồn tại
 	@Test
-	public void testDelete() throws Exception {
+	public void testDelete_when_postsService_getPostsById_then_null() throws Exception {
+		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
+		// tim kiếm post theo id
+		when(postsService.getPostdByID(anyInt())).thenReturn(null);// return post or null
+		// trả về list categoryId by postsId
+
+		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}/delete", 10)
+				.sessionAttr("user", user).sessionAttr("role", Roles.ADMIN)).andDo(MockMvcResultHandlers.print())
+				.andReturn();
+
+		MockHttpServletResponse response = mvcResult.getResponse();
+
+		assertEquals("Không tìm thấy bài viết với id:10", mvcResult.getFlashMap().get("message"));
+		// kiểm tra trang được điều hướng tới
+		assertEquals("/posts", response.getRedirectedUrl());
+
+	}
+
+	// Test Xóa bài viết case: role User
+	@Test
+	public void testDelete_role_user() throws Exception {
+
+		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}/delete", 10)
+				.sessionAttr("user", user).sessionAttr("role", Roles.USER)).andDo(MockMvcResultHandlers.print())
+				.andReturn();
+
+		MockHttpServletResponse response = mvcResult.getResponse();
+
+		// điểu hướng qua trang thông báo lỗi
+		assertEquals("/alert", response.getRedirectedUrl());
+	}
+
+	// Test Xóa bài viết case: role editor
+	@Test
+	public void testDelete_role_editor() throws Exception {
+
+		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}/delete", 10)
+				.sessionAttr("user", user).sessionAttr("role", Roles.EDITOR)).andDo(MockMvcResultHandlers.print())
+				.andReturn();
+
+		MockHttpServletResponse response = mvcResult.getResponse();
+
+		// điểu hướng qua trang thông báo lỗi
+		assertEquals("/alert", response.getRedirectedUrl());
+	}
+
+	/*
+	 * Test Xóa bài viết case: bài viết đó tồn tại và method get trả vài viết về
+	 * trang xác nhận xóa
+	 */
+	@Test
+	public void testDelete_when_postsService_getPostsById_then_posts_method_get() throws Exception {
 		SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
 		Posts post = new Posts(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
 				ff.parse("2022-11-11"), null);
-		
+
 		// giả lập Service trả về dữ liệu mong muốn
-		//trả về list role
+		// trả về list role
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
-		//tim kiếm post theo id
-		when(postsService.getPostdByID(anyInt())).thenReturn(post);//return post or null
-		//return categoryName by id
+		// tim kiếm post theo id
+		when(postsService.getPostdByID(anyInt())).thenReturn(post);// return post or null
+		// return categoryName by id
 		when(categoryService.getNameByID(anyInt())).thenReturn(createListCategoryTest().get(0).getName())
-								                   .thenReturn(createListCategoryTest().get(1).getName())
-								                   .thenReturn(createListCategoryTest().get(4).getName());
-		//trả về list categoryId by postsId
+				.thenReturn(createListCategoryTest().get(1).getName())
+				.thenReturn(createListCategoryTest().get(4).getName());
+		// trả về list categoryId by postsId
 		when(CPService.getListCategoryID(anyInt())).thenReturn(Arrays.asList(1, 2, 5));
 
-		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}/delete", 10)//method get or post
-				.sessionAttr("user", user))
+		MvcResult mvcResult = this.mockMvc
+				.perform(MockMvcRequestBuilders.get("/posts/{id}/delete", 10).sessionAttr("user", user))
 				.andDo(MockMvcResultHandlers.print()).andReturn();
-		
-		MockHttpServletResponse response = mvcResult.getResponse();
-		Posts postsResult = (Posts) postsService.getPostdByID(10);
-		
-		// kiểm tra trường hợp
-		if (postsResult != null) {// ko tìm thấy bài viêt
-			if (mvcResult.getRequest().getMethod().equalsIgnoreCase("Post")) {// method post là xóa
-				assertEquals("Xóa thành công bài viết có tiêu đề là:Tin tức tối nay",
-						mvcResult.getFlashMap().get("message"));
-				//kiểm tra trang được điều hướng tới
-				assertEquals("/posts", response.getRedirectedUrl());
-			}else {//trả về trang post/Delete
-				assertEquals("Tin tức tối nay", ((PostsOutput)mvcResult.getModelAndView().getModel().get("postsOutput")).getTitle());
-				//viewName trả về
-				assertEquals("/posts/Delete", mvcResult.getModelAndView().getViewName());
-			}
-			
-		} else {
-			assertEquals("Không tìm thấy bài viết với id:10", mvcResult.getFlashMap().get("message"));
-			//kiểm tra trang được điều hướng tới
-			assertEquals("/posts", response.getRedirectedUrl());
-		}
+
+		// kiểm tra
+		assertEquals("Tin tức tối nay",
+				((PostsOutput) mvcResult.getModelAndView().getModel().get("postsOutput")).getTitle());
+		// viewName trả về
+		assertEquals("/posts/Delete", mvcResult.getModelAndView().getViewName());
+
 	}
 
+	// Test Xóa bài viết case: bài viết đó tồn tại và method post thực hiện xóa bài
+	// viết
 	@Test
-	public void testPostsDetail() throws Exception {
+	public void testDelete_when_postsService_getPostsById_then_posts_method_post() throws Exception {
 		SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
 		Posts post = new Posts(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
 				ff.parse("2022-11-11"), null);
-		
-		 // giả lập Service trả về dữ liệu mong muốn	 
+
+		// giả lập Service trả về dữ liệu mong muốn
+		// trả về list role
 		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
-		when(CPService.getListCategoryID(anyInt())).thenReturn(Arrays.asList(2, 5));
-		//return categoryName by id
-		when(categoryService.getNameByID(anyInt())).thenReturn(createListCategoryTest().get(0).getName())
-												   .thenReturn(createListCategoryTest().get(1).getName())
-												   .thenReturn(createListCategoryTest().get(4).getName());
-		when(postsService.getPostdByID(anyInt())).thenReturn(post);//return null or posts
+		// tim kiếm post theo id
+		when(postsService.getPostdByID(anyInt())).thenReturn(post);
 
-		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}/detail", 10)
-				.sessionAttr("user", user))
-				.andDo(MockMvcResultHandlers.print()).andReturn();
+		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.post("/posts/{id}/delete", 10)
+				.sessionAttr("user", user).sessionAttr("role", Roles.ADMIN)).andDo(MockMvcResultHandlers.print())
+				.andReturn();
 
-		MockHttpServletResponse response = mvcResult.getResponse();	
-		Posts postsResult = (Posts) postsService.getPostdByID(10);
-		PostsOutput postsOutput = (PostsOutput) mvcResult.getModelAndView().getModel().get("postsDetail");
-		
-		// kiểm tra trường hợp
-		if (postsResult == null) {// ko tìm thấy bài viêt
-			assertEquals("Không tìm thấy bài viết với id:10", mvcResult.getFlashMap().get("message"));
-			//kiểm tra trang được điều hướng tới
-			assertEquals("/posts", response.getRedirectedUrl());
-		} else {//kiểm tra dữ liệu
-			assertEquals("Tin tức tối nay", postsOutput.getTitle());
-			assertEquals("Tin tức", postsOutput.getCategories().get(0).getCategoryName());
-			assertEquals(2, postsOutput.getCategories().size());
-			//kiểm tra viewName
-			assertEquals("posts/postsDetail", mvcResult.getModelAndView().getViewName());
-		}
+		MockHttpServletResponse response = mvcResult.getResponse();
+		// kiểm tra
+		assertEquals("Xóa thành công bài viết có tiêu đề là:Tin tức tối nay", mvcResult.getFlashMap().get("message"));
+		// kiểm tra trang được điều hướng tới
+		assertEquals("/posts", response.getRedirectedUrl());
 
 	}
+
+	// Test chi tiết bài viết case: bài viết đó không tồn tại
+	@Test
+	public void testPostsDetail_postsService_getPostsById_then_null() throws Exception {
+		// giả lập Service trả về dữ liệu mong muốn
+		when(postsService.getPostdByID(anyInt())).thenReturn(null);
+		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
+
+		MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}/detail", 10)
+				.sessionAttr("user", user).sessionAttr("role", Roles.ADMIN)).andDo(MockMvcResultHandlers.print())
+				.andReturn();
+
+		MockHttpServletResponse response = mvcResult.getResponse();
+
+		// kiểm tra
+		assertEquals("Không tìm thấy bài viết với id:10", mvcResult.getFlashMap().get("message"));
+		// kiểm tra trang được điều hướng tới
+		assertEquals("/posts", response.getRedirectedUrl());
+
+	}
+
+	// Test chi tiết bài viết case: bài viết đó tồn tại
+	@Test
+	public void testPostsDetail_postsService_getPostsById_then_posts() throws Exception {
+		SimpleDateFormat ff = new SimpleDateFormat("yyyy-MM-dd");
+		Posts post = new Posts(10, "Tin tức tối nay", "Tin tức tối nay nhiều vụ cướp xảy ra", null,
+				ff.parse("2022-11-11"), null);
+
+		// giả lập Service trả về dữ liệu mong muốn
+		when(roleService.listRoleByUser(anyString())).thenReturn(listRole);
+		when(CPService.getListCategoryID(anyInt())).thenReturn(Arrays.asList(2, 5));
+		// return categoryName by id
+		when(categoryService.getNameByID(anyInt())).thenReturn(createListCategoryTest().get(0).getName())
+				.thenReturn(createListCategoryTest().get(1).getName())
+				.thenReturn(createListCategoryTest().get(4).getName());
+		when(postsService.getPostdByID(anyInt())).thenReturn(post);// return null or posts
+
+		MvcResult mvcResult = this.mockMvc
+				.perform(MockMvcRequestBuilders.get("/posts/{id}/detail", 10).sessionAttr("user", user))
+				.andDo(MockMvcResultHandlers.print()).andReturn();
+
+		PostsOutput postsOutput = (PostsOutput) mvcResult.getModelAndView().getModel().get("postsDetail");
+
+		// kiểm tra dữ liệu
+		assertEquals("Tin tức tối nay", postsOutput.getTitle());
+		assertEquals("Tin tức", postsOutput.getCategories().get(0).getCategoryName());
+		assertEquals(2, postsOutput.getCategories().size());
+		// kiểm tra viewName
+		assertEquals("posts/postsDetail", mvcResult.getModelAndView().getViewName());
+
+	}
+
 }
